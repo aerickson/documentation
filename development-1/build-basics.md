@@ -34,15 +34,8 @@ Testing with large CPU counts shows build times continue to decrease as CPU coun
 
 ## Dependencies
 
-Before you can build, it is important to update the OS and install build dependencies:
-
-```text
-sudo apt update
-sudo apt upgrade
-sudo apt install gcc make git unzip wget xz-utils bc gperf zip g++ xfonts-utils xsltproc openjdk-11-jre-headless
-```
-
-Note: The first time the build-system runs it will validate and prompt you to install any missing package dependencies.
+TODO: add directions to install docker
+TODO: what else?
 
 ## Cloning
 
@@ -80,15 +73,31 @@ PROJECT=Generic ARCH=x86_64 tools/download-tool
 
 ## Building
 
+TODO: add steps to build docker image
+TODO: also include how to patch to make addon compilation work
+
 As a normal user \(not as root, and not using sudo\) run a build command, e.g.
 
 ```text
-PROJECT=Generic ARCH=x86_64 make image
+docker run \
+  --it --rm \
+  --log-driver none \
+  -v `pwd`:/build -w /build \
+  `# setting these the same disables swapping` \
+  --memory "6g" --memory-swap "6g" \
+  `# uses all cpus, but will reserve cycles on each` \
+  `#--cpus "4"` \
+  `# limit to certain processors` \
+  --cpuset-cpus "0-3" \
+  -e PROJECT=Generic \
+  -e ARCH=x86_64 \
+  -e MTPROGRESS=yes \
+  libreelec make image
 ```
 
 This will compile the `Generic` build `PROJECT` for the `x86_64` arch, and `make image` will generate an .img.gz file that can be written to USB/SD media for installation, and a .tar file that can update an existing installtion \(.img.gz files can also be used for updates, but .tar files are faster\).
 
-It is not uncommon for first-time builds to take 6-8 hours due to the number of sources that must be downloaded. Once the build completes the finished image files will be in the `~/LibreELEC.tv/target/` directory.
+It is not uncommon for first-time builds to take 6-8 hours due to the number of sources that must be downloaded. Once the build completes the finished image files will be in the `target/` directory.
 
 ## Rebuilding
 
